@@ -6,7 +6,7 @@ html='''<!DOCTYPE html><html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
-    setInterval("ajaxd()",500);
+    setInterval("ajaxd()",1000);
 });
 function ajaxd() { 
   	$.ajax({
@@ -15,8 +15,11 @@ function ajaxd() {
 
    		data: "user=success",
    		success: function(text){
-   	 		$('#myTextarea').val(text);
-     		$('#myTextarea').scrollTop = $('#myTextarea').scrollHeight;
+        var myTextarea = $('#myTextarea');
+   	 		myTextarea.val(text);
+     		
+        if(myTextarea.length)
+          myTextarea.scrollTop(myTextarea[0].scrollHeight - myTextarea.height());
    		}
  	});
 }
@@ -24,7 +27,7 @@ function ajaxd() {
 </head>
 <body>
 <textarea id= 'myTextarea' 
-  style="width:410px;height:180px">
+  style="width:410px;height:300px">
 </textarea>
 <form id='myForm' action='/' method='POST'>
   <input style="width:100px" type="text" name="usr" value="%(usr)s">
