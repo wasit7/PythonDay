@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Home</title>
+</head>
+<body>
+    <form method="post" action="{% url 'home' %}">{% csrf_token %}
+        {% if uname %}
+            Helo, {{uname}}<br>
+            The user already signed in. He may need to sign out<br>
+            <input type="submit" name="submit" value="sign-out">            
+        {% else %}
+            Please sign-in<br>
+            <a href="{% url 'social:begin' 'google-oauth2' %}">Google login</a>
+        {% endif %}  
+    </form> 
+</body>
+</html>
