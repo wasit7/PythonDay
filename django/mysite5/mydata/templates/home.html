@@ -81,7 +81,7 @@ $(document).ready(function(){
     	console.log("Send Order!!! csrftoken:"+csrftoken);
     	console.log("before updating: "+ JSON.stringify(orders));
     	orders.orders[0].quantity=Number(orders.orders[0].quantity) + 1;
-    	orders.orders[1].quantity=Number(orders.orders[1].quantity) + 2;
+    	orders.orders[1].quantity=Number(orders.orders[1].quantity) + 1;
     	console.log("after updating: "+ JSON.stringify(orders));
         $.ajax({
 		    url: 'orders',
