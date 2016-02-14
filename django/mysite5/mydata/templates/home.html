@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+
+///////BEGIN SETUP COOKIES///////
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie != '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+	    return cookieValue;
+	}
+	//csrftoken is variable to store current csrf token key
+	var csrftoken = getCookie('csrftoken');
+	console.log('csrftoken = '+ csrftoken);
+	function csrfSafeMethod(method) {
+	    // these HTTP methods do not require CSRF protection
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	    	}
+	    }
+	});
+///////END SETUP COOKIES///////
+
+	var products = [];
+	var orders={'orders':[
+			{"name":"Apple", "quantity":"1"},
+			{"name":"Orange", "quantity":"2"},
+		]}
+
+	$.ajax({
+	    url: 'products.json',
+	    type: 'GET',
+	    success: function(d) {
+	    	console.log( "_ products are : " + JSON.stringify(d) );
+	    	products=d;
+	    	$( ".products" ).append( "table Products<br>id, name<br>" );
+	    	$.each(products.products, function( i, product ) {
+				$( ".products" ).append( product.id + ", " + product.name + "<br>" );
+			});
+	    	
+	    }
+	});
+
+    $("#btngetorder").click(function(){
+        $.ajax({
+		    url: 'orders',
+		    type: 'GET',
+		    data: {
+		    	somedata:"some_string_you_may_need",
+		    },
+		    dataType: 'json',
+		    success: function(d) {
+		    	console.log("_orders are : "+ JSON.stringify(d) );
+		    	orders = d;
+		    	$( ".orders" ).empty();
+		    	$( ".orders" ).append( "table Orders<br>product, quantity<br>" );
+		    	$.each(orders.orders, function( i, order ) {
+					$( ".orders" ).append( order.name + ", " + order.quantity + "<br>" );
+				});
+	    	}
+		});
+    });
+
+    $("#btnsetorder").click(function(){
+    	console.log("Send Order!!! csrftoken:"+csrftoken);
+    	console.log("before updating: "+ JSON.stringify(orders));
+    	orders.orders[0].quantity=Number(orders.orders[0].quantity) + 1;
+    	orders.orders[1].quantity=Number(orders.orders[1].quantity) + 2;
+    	console.log("after updating: "+ JSON.stringify(orders));
+        $.ajax({
+		    url: 'orders',
+		    type: 'POST',
+		    data: {
+		    	orders: JSON.stringify(orders),
+		    },
+		    dataType: 'text',
+		    success: function(d) {
+		    	console.log("!! order sending result: "+ d);
+		    }
+		});
+    });
+});
+
+</script>
+</head>
+<body>
+
+
+<div class="container">
+	<div id="div1"><h2>Hello {{uname}}</h2></div>
+	<div class="products"></div>
+	<br>
+	<div class="orders"></div>
+	<button id="btngetorder">get order</button>
+	<button id="btnsetorder">set order</button>
+</div>
+</body>
+</html>
