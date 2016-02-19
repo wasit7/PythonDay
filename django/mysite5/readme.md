@@ -5,7 +5,7 @@ To send an object between client and server by using Ajax, we need codes for bot
         from django.http import JsonResponse
         import json
         def data_exchanger(request):
-                client_data=json.loads(request.POST.get('client_data'))
+                client_data=json.loads(request.GET.get('client_data'))
                 server_data = {'server_data':[
                         {'key':'value0'},
                         {'key':'value1'},
@@ -19,7 +19,7 @@ To send an object between client and server by using Ajax, we need codes for bot
         <script>
             $(document).ready(function(){
                 $.ajax({
-                        url: 'http://this.can.be.relative.path',
+                        url: 'http://this.can.be.relative.path/data_exchanger',
                         type: 'GET',
                         data:{
                                 client_data: JSON.stringify(client_data)
