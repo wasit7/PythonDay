@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+{% load staticfiles %}
+<script src="{% static 'angular150.min.js' %}"></script>
+<body>
+{% verbatim %} 
+<div ng-app="myApp" ng-controller="myCtrl">
+	<label>readonly: <input type="checkbox" ng-model="readonly"></label>
+    <br>
+    <button ng-click="add()">add</button>
+    <button ng-click="update()">update</button> 
+    <div ng-repeat="(k,v) in selectedSub">
+		<select
+
+			ng-disabled="readonly"
+			ng-model="selectedSub[k].subname"
+			ng-options="i.subname as i.subname for i in subjects "
+		></select>
+		<button ng-click="remove(k)" ng-show="!readonly">remove</button>
+	</div>
+	<br>
+	  
+    <p><h3>list of subjecys:</h3>{{subjects}}</p>
+	<p><h3>list of selected subjects:</h3>{{selectedSub}}</p>    
+</div>
+{% endverbatim %} 
+<script>
+var data={};
+var app = angular.module('myApp', []).config(function($httpProvider) {
+    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+});
+app.controller('myCtrl', function($scope,$http) {
+    $http.get("{% url 'subjects' %}")
+    .then(function(response) {
+        $scope.subjects = response.data.serverdata;
+    });
+    
+    $scope.selectedSub= []; 
+    $scope.readonly=false;
+    var reindex=function(){
+        angular.forEach($scope.selectedSub, function(value, key){
+            value.subid=key;
+            //$document.find('#some-id')).
+        });
+    }
+    $scope.add = function(){
+    	$scope.selectedSub.splice(-1,0,{"subid": -1, "grade": "-", "subname": "-"});
+        reindex();
+    }
+    $scope.remove = function(k){
+    	//$scope.selectedSub.splice(k,1);
+        //reindex();
+
+        var clientdata=[$scope.selectedSub[k]];
+        $http.post("{% url 'remove_subjects' %}", clientdata)
+        .then(function(response) {
+            $scope.selectedSub = response.data.serverdata;
+            reindex();
+        });  
+    }
+    $scope.update = function(){
+        var clientdata=$scope.selectedSub;
+        $http.post("{% url 'enrolls' %}", clientdata)
+        .then(function(response) {
+            $scope.selectedSub = response.data.serverdata;
+            reindex();
+        });        
+        //$scope.$apply();
+    }
+    $scope.update();
+});
+</script>
+</body>
+</html>
