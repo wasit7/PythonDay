@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Titile name</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+</head>	
+<body>
+
+<div ng-app='myApp' ng-controller='myCtrl'>
+	<li ng-repeat='(key,value) in mydict'>
+		Extension number for {{key}} in {{value}}.
+	</li>
+	Wasit's extension is {{mydict['Wasit']}}
+</div>
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('myCtrl', function($scope) {
+    $scope.mydict={'Wasit':'224', 'Eric':'121', 'Andrew':'108'};
+});
+</script>
+</body>
+</html>
